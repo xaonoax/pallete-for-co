@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.palleteforco.palleteforco.domain.inquiry.mapper.InquiryMapper">
+    <insert id="insertInquiry" useGeneratedKeys="true" keyProperty="inquiry_id">
+        INSERT INTO INQUIRY(INQUIRY_TITLE, INQUIRY_CONTENT, INQUIRY_FILE_ATTACH)
+        VALUES(#{inquiry_title}, #{inquiry_content}, #{inquiry_file_attach})
+    </insert>
+    <select id="selectInquiryList">
+        SELECT INQUIRY_ID,
+               INQUIRY_TITLE,
+               INQUIRY_REGDATE
+        FROM INQUIRY
+    </select>
+    <select id="selectInquiryListDetail">
+        SELECT *
+        FROM INQUIRY
+        WHERE INQUIRY_ID = #{inquiry_id}
+    </select>
+    <update id="updateInquiry">
+        UPDATE INQUIRY
+        SET INQUIRY_TITLE = #{inquiry_title}, INQUIRY_CONTENT = #{inquiry_content}, INQUIRY_UPDATE_DATE = #{inquiry_update_date}, INQUIRY_FILE_ATTACH = #{inquiry_file_attach}
+    </update>
+    <delete id="deleteInquiry">
+        DELETE FROM INQUIRY
+        WHERE INQUIRY_ID = #{inquiry_id}
+    </delete>
+</mapper>
