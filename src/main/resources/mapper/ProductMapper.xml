@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.palleteforco.palleteforco.domain.product.mapper.ProductMapper">
+    <insert id="insertProduct" useGeneratedKeys="true" keyProperty="product_id">
+        INSERT INTO PRODUCT(PRODUCT_NAME, PRICE, QTY, PRODUCT_IMAGE, PRODUCT_DETAIL)
+        VALUES(#{product_name}, #{price}, #{qty}, #{product_image}, #{product_detail})
+    </insert>
+    <select id="selectProductList">
+        SELECT PRODUCT_ID,
+               PRODUCT_NAME,
+               PRICE,
+               QTY,
+               PRODUCT_IMAGE
+        FROM PRODUCT
+    </select>
+    <select id="selectProductListDetail">
+        SELECT *
+        FROM PRODUCT
+        WHERE PRODUCT_id = #{product_id}
+    </select>
+    <update id="updateProduct">
+        UPDATE PRODUCT
+        SET PRODUCT_NAME = #{product_name},
+            PRICE = #{price},
+            QTY = #{qty},
+            PRODUCT_IMAGE = #{product_image},
+            PRODUCT_DETAIL = #{product_detail}
+    </update>
+</mapper>
