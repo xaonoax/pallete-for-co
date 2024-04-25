@@ -15,7 +15,7 @@ public class InquiryController {
     private final InquiryService inquiryService;
 
     @Autowired
-    public InquiryController(InquiryService inquiryService) throws Exception{
+    public InquiryController(InquiryService inquiryService) {
         this.inquiryService = inquiryService;
     }
 
