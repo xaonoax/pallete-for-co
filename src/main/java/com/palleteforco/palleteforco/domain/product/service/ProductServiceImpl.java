@@ -29,9 +29,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Transactional
     public ProductDto getProductListDetail(Long product_id) throws Exception {
-        ProductDto productDto = productMapper.selectProductListDetail(product_id);
+        ProductDto existing = productMapper.selectProductListDetail(product_id);
 
-        if (productDto == null) {
+        if (existing == null) {
             throw new NotFoundException("찾으시는 제품이 없습니다.");
         }
 
