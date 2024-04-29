@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.palleteforco.palleteforco.domain.dib.mapper.DibMapper">
+    <insert id="insertDib" useGeneratedKeys="true" keyProperty="dib_id">
+        INSERT INTO DIB
+        VALUES(#{dib_id}, #{dib_status}, #{dib_date}, #{product_id})
+    </insert>
+    <select id="selectDibList">
+        SELECT PRODUCT_ID,
+               DIB_ID
+        FROM DIB
+    </select>
+    <delete id="deleteDib">
+        DELETE FROM DIB
+        WHERE DIB_ID = #{dib_id}
+    </delete>
+</mapper>
