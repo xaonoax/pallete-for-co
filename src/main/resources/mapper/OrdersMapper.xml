@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.palleteforco.palleteforco.domain.orders.mapper.OrdersMapper">
+    <insert id="insertOrders" useGeneratedKeys="true" keyProperty="orders_id">
+        INSERT INTO ORDERS(cart_id, orders_id, orders_date, orders_status)
+        VALUES(#{cart_id}, #{orders_id}, #{orders_date}, 1)
+    </insert>
+    <select id="selectOrdersList">
+        SELECT *
+        FROM ORDERS
+    </select>
+    <update id="updateOrders">
+        UPDATE ORDERS
+        SET ORDERS_STATUS = #{orders_status}
+        WHERE ORDERS_ID = #{orders_id}
+    </update>
+</mapper>
