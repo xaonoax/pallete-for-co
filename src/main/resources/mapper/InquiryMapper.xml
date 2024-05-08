@@ -19,6 +19,7 @@
     <update id="updateInquiry">
         UPDATE INQUIRY
         SET INQUIRY_TITLE = #{inquiry_title}, INQUIRY_CONTENT = #{inquiry_content}, INQUIRY_UPDATE_DATE = #{inquiry_update_date}, INQUIRY_FILE_ATTACH = #{inquiry_file_attach}
+        WHERE INQUIRY_ID = #{inquiry_id}
     </update>
     <delete id="deleteInquiry">
         DELETE FROM INQUIRY
