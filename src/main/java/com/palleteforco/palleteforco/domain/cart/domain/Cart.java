@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 public class Cart {
+    private String email;
     private Long product_id;
     private Long cart_id;
     private Long cart_qty;

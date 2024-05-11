@@ -5,8 +5,6 @@ import com.palleteforco.palleteforco.domain.cart.service.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/cart")
 public class CartController {
@@ -24,13 +22,10 @@ public class CartController {
         return cartDto;
     }
 
-    @GetMapping
-    public List<CartDto> getCartList() throws Exception {
-        return cartService.getCartList();
-    }
+    @PutMapping("/{cart_id}")
+    public CartDto modifyCart(@PathVariable("cart_id") Long cart_id, @RequestBody CartDto cartDto) throws Exception {
+        cartDto.setCart_id(cart_id);
 
-    @PutMapping
-    public CartDto modifyCart(@RequestBody CartDto cartDto) throws Exception {
         cartService.modifyCart(cartDto);
         return cartDto;
     }
