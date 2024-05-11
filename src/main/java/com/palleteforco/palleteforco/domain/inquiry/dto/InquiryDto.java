@@ -10,12 +10,14 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class InquiryDto {
+    private String email;
     private Long inquiry_id;
     private String inquiry_title;
     private String inquiry_content;
+    private String inquiry_writer;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime inquiry_regdate;
+    private LocalDateTime inquiry_reg_date;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime inquiry_update_date;
