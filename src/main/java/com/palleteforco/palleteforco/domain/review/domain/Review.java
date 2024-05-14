@@ -6,10 +6,12 @@ import java.time.LocalDateTime;
 
 @Data
 public class Review {
+    private String email;
     private Long orders_id;
     private Long review_id;
     private String review_content;
-    private LocalDateTime review_regdate;
+    private String review_writer;
+    private LocalDateTime review_reg_date;
     private LocalDateTime review_update_date;
     private int score;
     private String review_file_attach;

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/review")
+@RequestMapping("/products")
 @Slf4j
 public class ReviewController {
     private final ReviewService reviewService;
@@ -19,26 +19,31 @@ public class ReviewController {
         this.reviewService = reviewService;
     }
 
-    @PostMapping
+    @PostMapping("/{product_id}/review")
     public ReviewDto registerReview(@RequestBody ReviewDto reviewDto) throws Exception {
         reviewService.registerReview(reviewDto);
 
         return reviewDto;
     }
 
-    @GetMapping
-    public List<ReviewDto> getReviewList() throws Exception {
-        return reviewService.getReviewList();
+    @GetMapping("/{product_id}/review")
+    public List<ReviewDto> getReviewList(@PathVariable("product_id") Long product_id) throws Exception {
+
+        return reviewService.getReviewList(product_id);
     }
 
-    @PutMapping("/{review_id}")
-    public ReviewDto modifyReview(@PathVariable("review_id") Long review_id, @RequestBody ReviewDto reviewDto) throws Exception {
-        reviewService.modifyReview(reviewDto);
+    @PutMapping("/{product_id}/review/{review_id}")
+    public ReviewDto modifyReview(@PathVariable("product_id") Long product_id,
+                                  @PathVariable("review_id") Long review_id,
+                                  @RequestBody ReviewDto reviewDto) throws Exception {
+
+        reviewDto.setReview_id(review_id);
+        reviewService.modifyReview(reviewDto, product_id);
 
         return reviewDto;
     }
 
-    @DeleteMapping("/{review_id}")
+    @DeleteMapping("/{product_id}/review/{review_id}")
     public void removeReview(@PathVariable("review_id") Long review_id) throws Exception {
         reviewService.removeReview(review_id);
     }
