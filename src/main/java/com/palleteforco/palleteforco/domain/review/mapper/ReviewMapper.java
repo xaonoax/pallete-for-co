@@ -8,7 +8,8 @@ import java.util.List;
 @Mapper
 public interface ReviewMapper {
     public void insertReview(ReviewDto reviewDto) throws Exception;
-    public List<ReviewDto> selectReviewList() throws Exception;
+    public List<ReviewDto> selectReviewList(Long product_id) throws Exception;
+    public ReviewDto selectReview(Long review_id) throws Exception;
     public void updateReview(ReviewDto reviewDto) throws Exception;
     public void deleteReview(Long review_id) throws Exception;
 }

@@ -2,12 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.palleteforco.palleteforco.domain.review.mapper.ReviewMapper">
     <insert id="insertReview" useGeneratedKeys="true" keyProperty="review_id">
-        INSERT INTO REVIEW(ORDERS_ID, REVIEW_CONTENT, REVIEW_FILE_ATTACH, SCORE)
-        VALUES(#{orders_id}, #{review_content}, #{review_file_attach}, #{score})
+        INSERT INTO REVIEW(EMAIL, ORDERS_ID, REVIEW_CONTENT, REVIEW_WRITER, REVIEW_FILE_ATTACH, SCORE)
+        SELECT #{email}, #{orders_id}, #{review_content}, M.NAME, #{review_file_attach}, #{score}
+        FROM MEMBER M, ORDERS O
+        WHERE M.EMAIL = #{email} AND ORDERS_ID = #{orders_id} AND O.ORDERS_STATUS = 3
     </insert>
     <select id="selectReviewList">
         SELECT *
+        FROM REVIEW R
+        JOIN ORDERS O ON R.ORDERS_ID = O.ORDERS_ID
+        JOIN CART C ON O.CART_ID = C.CART_ID
+        WHERE C.PRODUCT_ID = #{product_id}
+    </select>
+    <select id="selectReview">
+        SELECT *
         FROM REVIEW
+        WHERE REVIEW_ID = #{review_id}
     </select>
     <update id="updateReview">
         UPDATE REVIEW
@@ -15,7 +25,7 @@
             REVIEW_UPDATE_DATE = #{review_update_date},
             REVIEW_FILE_ATTACH = #{review_file_attach},
             SCORE = #{score}
-        WHERE ORDERS_ID = #{orders_id}
+        WHERE REVIEW_ID = #{review_id}
     </update>
     <delete id="deleteReview">
         DELETE FROM REVIEW
