@@ -4,7 +4,7 @@ import com.palleteforco.palleteforco.domain.product.dto.ProductDto;
 import com.palleteforco.palleteforco.domain.product.mapper.ProductMapper;
 import com.palleteforco.palleteforco.domain.review.dto.ReviewDto;
 import com.palleteforco.palleteforco.domain.review.mapper.ReviewMapper;
-import com.palleteforco.palleteforco.global.exception.ForbiddenException;
+import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,7 +54,7 @@ public class ReviewServiceImpl implements ReviewService {
         String email = (String) oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
-            throw new ForbiddenException("접근 권한이 없습니다.");
+            throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
         reviewMapper.updateReview(reviewDto);
@@ -72,7 +72,7 @@ public class ReviewServiceImpl implements ReviewService {
         String email = (String) oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
-            throw new ForbiddenException("접근 권한이 없습니다.");
+            throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
         reviewMapper.deleteReview(review_id);
