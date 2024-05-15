@@ -2,7 +2,7 @@ package com.palleteforco.palleteforco.domain.inquiry.service;
 
 import com.palleteforco.palleteforco.domain.inquiry.dto.InquiryDto;
 import com.palleteforco.palleteforco.domain.inquiry.mapper.InquiryMapper;
-import com.palleteforco.palleteforco.global.exception.ForbiddenException;
+import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +69,7 @@ public class InquiryServiceImpl implements InquiryService {
         String email = (String)oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
-            throw new ForbiddenException("접근 권한이 없습니다.");
+            throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
         inquiryDto.setInquiry_update_date(LocalDateTime.now());
@@ -90,7 +90,7 @@ public class InquiryServiceImpl implements InquiryService {
         String email = (String)oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
-            throw new ForbiddenException("접근 권한이 없습니다.");
+            throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
         inquiryMapper.deleteInquiry(inquiry_id);
