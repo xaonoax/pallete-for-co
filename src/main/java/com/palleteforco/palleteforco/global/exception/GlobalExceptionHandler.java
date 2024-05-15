@@ -12,4 +12,16 @@ public class GlobalExceptionHandler {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.NOT_FOUND.value(), exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(ForbiddenExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleForbiddenException(ForbiddenExceptionHandler exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.FORBIDDEN.value(), exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(AlreadyCancelledOrderExceptionHandler.class)
+    public ResponseEntity<ErrorResponse> handleAlreadyCancelledOrderException(AlreadyCancelledOrderExceptionHandler exception) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
 }
