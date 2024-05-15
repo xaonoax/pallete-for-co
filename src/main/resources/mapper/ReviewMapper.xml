@@ -3,7 +3,7 @@
 <mapper namespace="com.palleteforco.palleteforco.domain.review.mapper.ReviewMapper">
     <insert id="insertReview" useGeneratedKeys="true" keyProperty="review_id">
         INSERT INTO REVIEW(EMAIL, ORDERS_ID, REVIEW_CONTENT, REVIEW_WRITER, REVIEW_FILE_ATTACH, SCORE)
-        SELECT #{email}, #{orders_id}, #{review_content}, M.NAME, #{review_file_attach}, #{score}
+        SELECT M.EMAIL, #{orders_id}, #{review_content}, M.NAME, #{review_file_attach}, #{score}
         FROM MEMBER M, ORDERS O
         WHERE M.EMAIL = #{email} AND ORDERS_ID = #{orders_id} AND O.ORDERS_STATUS = 3
     </insert>
