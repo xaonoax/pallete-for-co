@@ -6,7 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface CartMapper {
     public void insertCart(CartDto cartDto) throws Exception;
-    public CartDto selectCart(Long cart_id) throws Exception;
+    public CartDto selectCartById(Long cart_id) throws Exception;
     public void updateCart(CartDto cartDto) throws Exception;
+    public void updateCartStatus(Long cart_id) throws Exception;
     public void deleteCart(Long cart_id) throws Exception;
 }
