@@ -2,8 +2,6 @@ package com.palleteforco.palleteforco.domain.orders.service;
 
 import com.palleteforco.palleteforco.domain.cart.dto.CartDto;
 import com.palleteforco.palleteforco.domain.cart.mapper.CartMapper;
-import com.palleteforco.palleteforco.domain.google.mapper.GoogleMapper;
-import com.palleteforco.palleteforco.domain.member.mapper.MemberMapper;
 import com.palleteforco.palleteforco.domain.orders.dto.OrdersDto;
 import com.palleteforco.palleteforco.domain.orders.mapper.OrdersMapper;
 import com.palleteforco.palleteforco.global.exception.AlreadyCancelledOrderExceptionHandler;
@@ -20,15 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class OrdersServiceImpl implements OrdersService {
     private final OrdersMapper ordersMapper;
-    private final MemberMapper memberMapper;
-    private final GoogleMapper googleMapper;
     private final CartMapper cartMapper;
 
     @Autowired
-    public OrdersServiceImpl(OrdersMapper ordersMapper, MemberMapper memberMapper, GoogleMapper googleMapper, CartMapper cartMapper) {
+    public OrdersServiceImpl(OrdersMapper ordersMapper, CartMapper cartMapper) {
         this.ordersMapper = ordersMapper;
-        this.memberMapper = memberMapper;
-        this.googleMapper = googleMapper;
         this.cartMapper = cartMapper;
     }
 
