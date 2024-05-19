@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.palleteforco.palleteforco.domain.review.mapper.ReviewMapper">
     <insert id="insertReview" useGeneratedKeys="true" keyProperty="review_id">
-        INSERT INTO REVIEW(EMAIL, ORDERS_ID, REVIEW_CONTENT, REVIEW_WRITER, REVIEW_FILE_ATTACH, SCORE)
-        SELECT M.EMAIL, #{orders_id}, #{review_content}, M.NAME, #{review_file_attach}, #{score}
+        INSERT INTO REVIEW(EMAIL, ORDERS_ID, REVIEW_CONTENT, REVIEW_WRITER, SCORE, REVIEW_FILE_NAME, REVIEW_STORED_FILE_NAME)
+        SELECT M.EMAIL, #{orders_id}, #{review_content}, M.NAME, #{score}, #{review_file_name}, #{review_stored_file_name}
         FROM MEMBER M, ORDERS O
         WHERE M.EMAIL = #{email} AND ORDERS_ID = #{orders_id} AND O.ORDERS_STATUS = 3
     </insert>
@@ -23,12 +23,18 @@
         UPDATE REVIEW
         SET REVIEW_CONTENT = #{review_content},
             REVIEW_UPDATE_DATE = #{review_update_date},
-            REVIEW_FILE_ATTACH = #{review_file_attach},
-            SCORE = #{score}
+            SCORE = #{score},
+            REVIEW_FILE_NAME = #{review_file_name},
+            REVIEW_STORED_FILE_NAME = #{review_stored_file_name}
         WHERE REVIEW_ID = #{review_id}
     </update>
     <delete id="deleteReview">
         DELETE FROM REVIEW
         WHERE REVIEW_ID = #{review_id}
     </delete>
+    <select id="selectExistForReview">
+        SELECT COUNT(*) > 0
+        FROM REVIEW
+        WHERE ORDERS_ID = #{orders_id}
+    </select>
 </mapper>

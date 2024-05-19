@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -26,5 +27,7 @@ public class ReviewDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime review_update_date;
     private int score;
-    private String review_file_attach;
+    private String review_file_name;
+    private String review_stored_file_name;
+    private MultipartFile reviewFile;
 }

@@ -2,8 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.palleteforco.palleteforco.domain.inquiry.mapper.InquiryMapper">
     <insert id="insertInquiry" useGeneratedKeys="true" keyProperty="inquiry_id">
-        INSERT INTO INQUIRY(EMAIL, INQUIRY_TITLE, INQUIRY_CONTENT, INQUIRY_WRITER, INQUIRY_FILE_ATTACH)
-        SELECT #{email}, #{inquiry_title}, #{inquiry_content}, M.NAME, #{inquiry_file_attach}
+        INSERT INTO INQUIRY(EMAIL, INQUIRY_TITLE, INQUIRY_CONTENT, INQUIRY_WRITER, INQUIRY_FILE_NAME, INQUIRY_STORED_FILE_NAME)
+        SELECT M.EMAIL, #{inquiry_title}, #{inquiry_content}, M.NAME, #{inquiry_file_name}, #{inquiry_stored_file_name}
         FROM MEMBER M
         WHERE M.EMAIL = #{email}
     </insert>
@@ -24,7 +24,8 @@
         SET INQUIRY_TITLE = #{inquiry_title},
             INQUIRY_CONTENT = #{inquiry_content},
             INQUIRY_UPDATE_DATE = #{inquiry_update_date},
-            INQUIRY_FILE_ATTACH = #{inquiry_file_attach}
+            INQUIRY_FILE_NAME = #{inquiry_file_name},
+            INQUIRY_STORED_FILE_NAME = #{inquiry_stored_file_name}
         WHERE INQUIRY_ID = #{inquiry_id}
     </update>
     <delete id="deleteInquiry">

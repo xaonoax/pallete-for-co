@@ -4,13 +4,12 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class InquiryDto {
+public class InquiryResponse {
     private String email;
     private Long inquiry_id;
     private String inquiry_title;
@@ -24,5 +23,4 @@ public class InquiryDto {
     private LocalDateTime inquiry_update_date;
     private String inquiry_file_name;
     private String inquiry_stored_file_name;
-    private MultipartFile inquiryFile;
 }

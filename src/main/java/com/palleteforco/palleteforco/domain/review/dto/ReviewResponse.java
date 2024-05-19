@@ -1,14 +1,15 @@
-package com.palleteforco.palleteforco.domain.review.domain;
+package com.palleteforco.palleteforco.domain.review.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
-@Data
-public class Review {
+@Getter
+@Setter
+public class ReviewResponse {
     private String email;
     private Long orders_id;
     private Long review_id;
@@ -23,5 +24,4 @@ public class Review {
     private int score;
     private String review_file_name;
     private String review_stored_file_name;
-    private MultipartFile reviewFile;
 }
