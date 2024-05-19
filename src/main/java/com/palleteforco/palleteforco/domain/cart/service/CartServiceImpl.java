@@ -19,8 +19,8 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
 
     @Autowired
-    public CartServiceImpl(CartMapper cartMappert) {
-        this.cartMapper = cartMappert;
+    public CartServiceImpl(CartMapper cartMapper) {
+        this.cartMapper = cartMapper;
     }
 
     @Transactional
