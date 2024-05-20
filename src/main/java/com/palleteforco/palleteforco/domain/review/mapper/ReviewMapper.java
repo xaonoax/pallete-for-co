@@ -13,5 +13,6 @@ public interface ReviewMapper {
     public void updateReview(ReviewDto reviewDto) throws Exception;
     public void deleteReview(Long review_id) throws Exception;
     public boolean selectExistForReview(Long orders_id) throws Exception;
+    public List<ReviewDto> selectMyReview(String email) throws Exception;
 }
 

@@ -8,6 +8,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class DibServiceImpl implements DibService{
     private final DibMapper dibMapper;
@@ -35,4 +37,12 @@ public class DibServiceImpl implements DibService{
 
         dibMapper.deleteDib(dib_id);
     }
+
+    public List<DibDto> getMyDib() throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String)oAuth2User.getAttributes().get("email");
+
+        return dibMapper.selectMyDib(email);
+    }
+
 }

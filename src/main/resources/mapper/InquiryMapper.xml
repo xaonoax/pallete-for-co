@@ -32,4 +32,9 @@
         DELETE FROM INQUIRY
         WHERE INQUIRY_ID = #{inquiry_id}
     </delete>
+    <select id="selectMyInquiries">
+        SELECT *
+        FROM INQUIRY
+        WHERE EMAIL = #{email}
+    </select>
 </mapper>

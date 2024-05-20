@@ -16,4 +16,9 @@
         DELETE FROM DIB
         WHERE DIB_ID = #{dib_id}
     </delete>
+    <select id="selectMyDib">
+        SELECT *
+        FROM DIB
+        WHERE EMAIL = #{email}
+    </select>
 </mapper>

@@ -15,4 +15,10 @@
         SET ORDERS_STATUS = 0
         WHERE ORDERS_ID = #{orders_id}
     </update>
+    <select id="selectMyOrders">
+        SELECT *
+        FROM ORDERS O
+        JOIN CART C ON O.CART_ID = C.CART_ID
+        WHERE C.EMAIL = #{email}
+    </select>
 </mapper>

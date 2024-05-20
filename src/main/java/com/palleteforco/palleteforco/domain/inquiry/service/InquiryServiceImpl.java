@@ -160,5 +160,14 @@ public class InquiryServiceImpl implements InquiryService {
 
         inquiryMapper.deleteInquiry(inquiry_id);
     }
+
+    // 문의사항 목록 마이페이지 조회
+    public List<InquiryDto> getMyInquiries() throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String)oAuth2User.getAttributes().get("email");
+
+        log.info("----------- " + inquiryMapper.selectMyInquiries(email));
+        return inquiryMapper.selectMyInquiries(email);
+    }
 }
 
