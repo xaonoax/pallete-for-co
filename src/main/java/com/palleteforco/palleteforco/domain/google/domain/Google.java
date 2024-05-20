@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class Google {
-    private Long id;
     private String email;
     private Role role;
 }

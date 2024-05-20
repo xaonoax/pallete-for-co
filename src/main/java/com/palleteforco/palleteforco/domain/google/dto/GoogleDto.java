@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class GoogleDto {
-    private Long id;
     private String email;
     private Role role;
 

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.palleteforco.palleteforco.domain.google.mapper.GoogleMapper">
-    <insert id="insertGoogle" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO GOOGLE(EMAIL, ROLE)
+    <insert id="insertGoogle">
+        INSERT INTO GOOGLE
         VALUES(#{email}, #{role})
     </insert>
     <select id="selectGoogleEmail">
