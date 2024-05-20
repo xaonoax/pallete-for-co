@@ -10,6 +10,4 @@ public interface GoogleMapper {
     public GoogleDto selectGoogleEmail(String email);
 
     public void updateGoogle(GoogleDto googleDto);
-    
-    public void deleteGoogle(String email) throws Exception;
 }
