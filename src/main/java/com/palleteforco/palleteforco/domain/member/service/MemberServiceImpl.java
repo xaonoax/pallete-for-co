@@ -9,6 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class MemberServiceImpl implements MemberService {
     private final MemberMapper memberMapper;
@@ -24,18 +26,27 @@ public class MemberServiceImpl implements MemberService {
         OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String email = (String) oAuth2User.getAttributes().get("email");
 
-        oAuth2Service.updateRole(email, Role.MEMBER);
+        MemberDto existing = memberMapper.selectMemberProfile(memberDto.getEmail());
 
-        MemberDto existing = memberMapper.selectMemberProfile(memberDto.getId());
-
-        memberMapper.insertMemberInfo(memberDto);
+        if (existing == null) {
+            memberMapper.insertMemberInfo(memberDto);
+            oAuth2Service.updateRole(email, Role.MEMBER);
+        }
     }
 
-    public MemberDto getMemberProfile(Long member_id) throws Exception {
-        return memberMapper.selectMemberProfile(member_id);
+    public List<MemberDto> getGoogleMemberInfo() throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String)oAuth2User.getAttributes().get("email");
+
+        return memberMapper.selectGoogleMemberInfo(email);
     }
 
     public void modifyMemberInfo(MemberDto memberDto) throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String)oAuth2User.getAttributes().get("email");
+
+        memberDto.setEmail(email);
+
         memberMapper.updateMemberInfo(memberDto);
     }
 }
