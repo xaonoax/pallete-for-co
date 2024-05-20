@@ -37,4 +37,9 @@
         FROM REVIEW
         WHERE ORDERS_ID = #{orders_id}
     </select>
+    <select id="selectMyReview">
+        SELECT *
+        FROM REVIEW
+        WHERE EMAIL = #{email}
+    </select>
 </mapper>

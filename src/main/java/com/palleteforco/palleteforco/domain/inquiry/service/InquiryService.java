@@ -20,4 +20,7 @@ public interface InquiryService {
 
     // 문의사항 삭제
     public void removeInquiry(Long inquiry_id) throws Exception;
+
+    // 문의사항 목록 마이페이지 조회
+    public List<InquiryDto> getMyInquiries() throws Exception;
 }

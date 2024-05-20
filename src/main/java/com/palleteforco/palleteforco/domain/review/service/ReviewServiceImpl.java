@@ -141,4 +141,11 @@ public class ReviewServiceImpl implements ReviewService {
 
         reviewMapper.deleteReview(review_id);
     }
+
+    public List<ReviewDto> getMyReview() throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String) oAuth2User.getAttributes().get("email");
+
+        return reviewMapper.selectMyReview(email);
+    }
 }

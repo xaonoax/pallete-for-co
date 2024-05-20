@@ -14,6 +14,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class OrdersServiceImpl implements OrdersService {
@@ -60,5 +62,12 @@ public class OrdersServiceImpl implements OrdersService {
         }
 
         ordersMapper.updateOrdersByCancel(orders_id);
+    }
+
+    public List<OrdersDto> getMyOrders() throws Exception {
+        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String email = (String) oAuth2User.getAttributes().get("email");
+
+        return ordersMapper.selectMyOrders(email);
     }
 }
