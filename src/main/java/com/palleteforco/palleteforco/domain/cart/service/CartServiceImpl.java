@@ -2,6 +2,8 @@ package com.palleteforco.palleteforco.domain.cart.service;
 
 import com.palleteforco.palleteforco.domain.cart.dto.CartDto;
 import com.palleteforco.palleteforco.domain.cart.mapper.CartMapper;
+import com.palleteforco.palleteforco.domain.product.dto.ProductDto;
+import com.palleteforco.palleteforco.domain.product.mapper.ProductMapper;
 import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +20,12 @@ import java.util.List;
 @Slf4j
 public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
+    private final ProductMapper productMapper;
 
     @Autowired
-    public CartServiceImpl(CartMapper cartMapper) {
+    public CartServiceImpl(CartMapper cartMapper, ProductMapper productMapper) {
         this.cartMapper = cartMapper;
+        this.productMapper = productMapper;
     }
 
     @Transactional
@@ -32,6 +36,12 @@ public class CartServiceImpl implements CartService {
         cartDto.setEmail(email);
 
         cartDto.setCart_date(LocalDateTime.now());
+
+        ProductDto productDto = productMapper.selectProductListDetail(cartDto.getProduct_id());
+
+        if (productDto.getQty() == 0) {
+            throw new NotFoundException("제품 수량이 0입니다.");
+        }
 
         cartMapper.insertCart(cartDto);
     }
