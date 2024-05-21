@@ -5,6 +5,7 @@ import com.palleteforco.palleteforco.domain.security.oauth.OAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,18 +26,17 @@ public class SecurityConfig {
         return httpSecurity
                 .csrf((csrfConfig) ->
                         csrfConfig.disable())
-//                .headers((headers) ->
-//                        headers.disable())
                 .logout((logoutConfig) ->
                         logoutConfig.disable())
-                .formLogin((formLoginConfig) ->
-                        formLoginConfig
-                                .successHandler(loginSuccessHandler()))
 
                 .authorizeHttpRequests((authorizeRequests) ->
                         authorizeRequests
-                                .requestMatchers("/", "/login/**", "/product/**").permitAll()
-                                .requestMatchers("/cart/**", "/orders", "/dib/**", "/review/**", "/inquiries").hasRole(Role.MEMBER.name())
+                                .requestMatchers("/", "/login/**").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/producst/**").hasRole(Role.MEMBER.name())
+                                .requestMatchers(HttpMethod.PUT, "/products/**").hasRole(Role.MEMBER.name())
+                                .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.MEMBER.name())
+                                .requestMatchers("/cart/**", "/orders/**", "/dib/**", "/inquiries/**", "mypage/**").hasRole(Role.MEMBER.name())
                                 .requestMatchers("/members/join").hasRole(Role.GUEST.name())
                                 .anyRequest().authenticated()
                 )
