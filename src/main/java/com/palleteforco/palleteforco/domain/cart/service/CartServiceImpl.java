@@ -4,12 +4,11 @@ import com.palleteforco.palleteforco.domain.cart.dto.CartDto;
 import com.palleteforco.palleteforco.domain.cart.mapper.CartMapper;
 import com.palleteforco.palleteforco.domain.product.dto.ProductDto;
 import com.palleteforco.palleteforco.domain.product.mapper.ProductMapper;
+import com.palleteforco.palleteforco.domain.security.oauth.OAuth2Service;
 import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,54 +20,74 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
     private final ProductMapper productMapper;
+    private final OAuth2Service oAuth2Service;
 
     @Autowired
-    public CartServiceImpl(CartMapper cartMapper, ProductMapper productMapper) {
+    public CartServiceImpl(CartMapper cartMapper,
+                           ProductMapper productMapper,
+                           OAuth2Service oAuth2Service) {
         this.cartMapper = cartMapper;
         this.productMapper = productMapper;
+        this.oAuth2Service = oAuth2Service;
     }
 
     @Transactional
     public void registerCart(CartDto cartDto) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
 
         cartDto.setEmail(email);
-
         cartDto.setCart_date(LocalDateTime.now());
+        cartDto.setCart_status(0);
 
         ProductDto productDto = productMapper.selectProductListDetail(cartDto.getProduct_id());
 
         if (productDto.getQty() == 0) {
-            throw new NotFoundException("제품 수량이 0입니다.");
+            throw new NotFoundException("제품 재고 수량이 0입니다.");
         }
 
-        cartMapper.insertCart(cartDto);
+        CartDto existing = cartMapper.selectExistForCart(email, cartDto.getProduct_id());
+
+        if (existing != null) {
+            if (existing.getCart_status() == 0) {
+                existing.setCart_qty(existing.getCart_qty() + cartDto.getCart_qty());
+                cartMapper.updateCart(existing);
+                cartDto.setCart_id(existing.getCart_id());
+                cartDto.setCart_qty(existing.getCart_qty());
+            } else if (existing.getCart_status() == 1) {
+                cartMapper.insertCart(cartDto);
+            }
+        } else {
+            cartMapper.insertCart(cartDto);
+        }
     }
 
     @Transactional
     public void modifyCart(CartDto cartDto) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
 
-        CartDto existing = cartMapper.selectCartById(cartDto.getCart_id());
+        CartDto existingCartId = cartMapper.selectCartById(cartDto.getCart_id());
+        CartDto existingProductId = cartMapper.selectExistForCart(email, cartDto.getProduct_id());
 
-        if (existing == null) {
+        log.info("existingCartId : " + existingCartId);
+        log.info("existingProductId : " + existingProductId);
+
+        if (existingCartId == null || existingProductId == null) {
             throw new NotFoundException("장바구니에 담긴 제품이 없습니다.");
         }
 
-        if (!existing.getEmail().equals(email)) {
+        if (!existingCartId.getEmail().equals(email)) {
             throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
+
+        cartDto.setEmail(email);
+        cartDto.setCart_date(LocalDateTime.now());
 
         cartMapper.updateCart(cartDto);
     }
 
     @Transactional
     public void removeCart(Long cart_id) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
-
+        String email = oAuth2Service.getPrincipalMemberEmail();
         CartDto existing = cartMapper.selectCartById(cart_id);
 
         if (existing == null) {
@@ -82,9 +101,9 @@ public class CartServiceImpl implements CartService {
         cartMapper.deleteCart(cart_id);
     }
 
+    @Transactional
     public List<CartDto> getMyCart() throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
 
         return cartMapper.selectMyCart(email);
     }
