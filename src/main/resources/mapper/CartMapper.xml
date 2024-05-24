@@ -3,7 +3,7 @@
 <mapper namespace="com.palleteforco.palleteforco.domain.cart.mapper.CartMapper">
     <insert id="insertCart" useGeneratedKeys="true" keyProperty="cart_id">
         INSERT INTO CART(EMAIL, PRODUCT_ID, CART_QTY, CART_DATE, CART_STATUS)
-        SELECT #{email}, #{product_id}, #{cart_qty}, #{cart_date}, 0
+        SELECT #{email}, #{product_id}, #{cart_qty}, #{cart_date}, #{cart_status}
         FROM MEMBER M
         WHERE M.EMAIL = #{email}
     </insert>
@@ -26,6 +26,11 @@
         DELETE FROM CART
         WHERE CART_ID = #{cart_id}
     </delete>
+    <select id="selectExistForCart">
+        SELECT *
+        FROM CART
+        WHERE EMAIL = #{email} AND PRODUCT_ID = #{product_id} AND CART_STATUS = 0;
+    </select>
     <select id="selectMyCart">
         SELECT *
         FROM CART
