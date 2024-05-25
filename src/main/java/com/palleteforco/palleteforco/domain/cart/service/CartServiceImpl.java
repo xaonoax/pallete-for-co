@@ -34,12 +34,13 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void registerCart(CartDto cartDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
+        log.info("***** 이메일 ***** : " + email);
+        ProductDto productDto = productMapper.selectProductListDetail(cartDto.getProduct_id());
+        log.info("***** 제품 아이디 ***** : " + productDto);
 
         cartDto.setEmail(email);
         cartDto.setCart_date(LocalDateTime.now());
         cartDto.setCart_status(0);
-
-        ProductDto productDto = productMapper.selectProductListDetail(cartDto.getProduct_id());
 
         if (productDto.getQty() == 0) {
             throw new NotFoundException("제품 재고 수량이 0입니다.");
@@ -64,11 +65,9 @@ public class CartServiceImpl implements CartService {
     @Transactional
     public void modifyCart(CartDto cartDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
-
         CartDto existingCartId = cartMapper.selectCartById(cartDto.getCart_id());
-        CartDto existingProductId = cartMapper.selectExistForCart(email, cartDto.getProduct_id());
-
         log.info("existingCartId : " + existingCartId);
+        CartDto existingProductId = cartMapper.selectExistForCart(email, cartDto.getProduct_id());
         log.info("existingProductId : " + existingProductId);
 
         if (existingCartId == null || existingProductId == null) {
