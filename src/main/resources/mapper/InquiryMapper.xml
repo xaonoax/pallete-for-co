@@ -8,10 +8,7 @@
         WHERE M.EMAIL = #{email}
     </insert>
     <select id="selectInquiryList">
-        SELECT INQUIRY_ID,
-               INQUIRY_TITLE,
-               INQUIRY_WRITER,
-               INQUIRY_REG_DATE
+        SELECT *
         FROM INQUIRY
     </select>
     <select id="selectInquiryListDetail">

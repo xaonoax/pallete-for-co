@@ -4,14 +4,14 @@ package com.palleteforco.palleteforco.domain.inquiry.service;
 import com.palleteforco.palleteforco.domain.inquiry.dto.InquiryDto;
 import com.palleteforco.palleteforco.domain.inquiry.dto.InquiryResponse;
 import com.palleteforco.palleteforco.domain.inquiry.mapper.InquiryMapper;
+import com.palleteforco.palleteforco.domain.member.mapper.MemberMapper;
+import com.palleteforco.palleteforco.domain.security.oauth.OAuth2Service;
 import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,10 +25,16 @@ import java.util.UUID;
 @Service
 public class InquiryServiceImpl implements InquiryService {
     private final InquiryMapper inquiryMapper;
+    private final MemberMapper memberMapper;
+    private final OAuth2Service oAuth2Service;
 
     @Autowired
-    public InquiryServiceImpl(InquiryMapper inquiryMapper) {
+    public InquiryServiceImpl(InquiryMapper inquiryMapper,
+                              MemberMapper memberMapper,
+                              OAuth2Service oAuth2Service) {
         this.inquiryMapper = inquiryMapper;
+        this.memberMapper = memberMapper;
+        this.oAuth2Service = oAuth2Service;
     }
 
     @Value("${file.upload.dir}")
@@ -37,13 +43,14 @@ public class InquiryServiceImpl implements InquiryService {
     // 문의사항 등록
     @Transactional
     public InquiryResponse registerInquiry(InquiryDto inquiryDto) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String) oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
+        String writer = memberMapper.selectByName(email);
+
+        log.info("***** 파일 첨부 ***** : " + inquiryDto.getInquiryFile());
 
         inquiryDto.setEmail(email);
         inquiryDto.setInquiry_reg_date(LocalDateTime.now());
-
-        log.info("-------------- 파일 첨부 : " + inquiryDto.getInquiryFile());
+        inquiryDto.setInquiry_writer(writer);
 
         InquiryResponse response = new InquiryResponse();
 
@@ -96,14 +103,17 @@ public class InquiryServiceImpl implements InquiryService {
     // 문의사항 수정
     @Transactional
     public InquiryResponse modifyInquiry(InquiryDto inquiryDto) throws Exception {
+        String email = oAuth2Service.getPrincipalMemberEmail();
+        String writer = memberMapper.selectByName(email);
         InquiryDto existing = inquiryMapper.selectInquiryListDetail(inquiryDto.getInquiry_id());
+
+        inquiryDto.setEmail(email);
+        inquiryDto.setInquiry_update_date(LocalDateTime.now());
+        inquiryDto.setInquiry_writer(writer);
 
         if (existing == null) {
             throw new NotFoundException("수정할 게시물이 없습니다.");
         }
-
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String) oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
             throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
@@ -111,7 +121,8 @@ public class InquiryServiceImpl implements InquiryService {
 
         inquiryDto.setInquiry_update_date(LocalDateTime.now());
 
-        log.info("-------------- 파일 첨부 : " + inquiryDto.getInquiryFile());
+        log.info("***** 파일 첨부 ***** " +
+                ": " + inquiryDto.getInquiryFile());
 
         InquiryResponse response = new InquiryResponse();
 
@@ -132,7 +143,6 @@ public class InquiryServiceImpl implements InquiryService {
             response.setInquiry_file_name(inquiryFileName);
             response.setInquiry_stored_file_name(inquiryStoredFileName);
 
-            inquiryMapper.insertInquiry(inquiryDto);
             inquiryMapper.updateInquiry(inquiryDto);
         }
 
@@ -145,14 +155,12 @@ public class InquiryServiceImpl implements InquiryService {
     // 문의사항 삭제
     @Transactional
     public void removeInquiry(Long inquiry_id) throws Exception {
+        String email = oAuth2Service.getPrincipalMemberEmail();
         InquiryDto existing = inquiryMapper.selectInquiryListDetail(inquiry_id);
 
         if (existing == null) {
             throw new NotFoundException("삭제할 게시물이 없습니다.");
         }
-
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
 
         if (!existing.getEmail().equals(email)) {
             throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
@@ -162,11 +170,10 @@ public class InquiryServiceImpl implements InquiryService {
     }
 
     // 문의사항 목록 마이페이지 조회
+    @Transactional
     public List<InquiryDto> getMyInquiries() throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
 
-        log.info("----------- " + inquiryMapper.selectMyInquiries(email));
         return inquiryMapper.selectMyInquiries(email);
     }
 }
