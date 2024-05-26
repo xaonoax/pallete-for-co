@@ -3,22 +3,27 @@
 <mapper namespace="com.palleteforco.palleteforco.domain.dib.mapper.DibMapper">
     <insert id="insertDib" useGeneratedKeys="true" keyProperty="dib_id">
         INSERT INTO DIB(EMAIL, PRODUCT_ID)
-        SELECT #{email}, #{product_id}
+        SELECT #{email}, P.PRODUCT_ID
         FROM MEMBER M, PRODUCT P
         WHERE M.EMAIL = #{email} AND P.PRODUCT_ID = #{product_id}
     </insert>
-    <select id="selectDib">
+    <select id="selectDibById">
         SELECT *
         FROM DIB
         WHERE DIB_ID = #{dib_id}
     </select>
     <delete id="deleteDib">
         DELETE FROM DIB
-        WHERE DIB_ID = #{dib_id}
+        WHERE DIB_ID = #{dib_id} AND PRODUCT_ID = #{product_id}
     </delete>
     <select id="selectMyDib">
         SELECT *
         FROM DIB
         WHERE EMAIL = #{email}
+    </select>
+    <select id="selectDibByEmailProductId">
+        SELECT *
+        FROM DIB
+        WHERE EMAIL = #{email} AND PRODUCT_ID = #{product_id}
     </select>
 </mapper>
