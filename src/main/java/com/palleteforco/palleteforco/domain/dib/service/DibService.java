@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface DibService {
     public void addDib(DibDto dibDto) throws Exception;
-    public void cancelDib(Long dib_id) throws Exception;
+    public void cancelDib(Long product_id, Long dib_id) throws Exception;
     public List<DibDto> getMyDib() throws Exception;
 }
