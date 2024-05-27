@@ -23,4 +23,9 @@
         JOIN MEMBER M ON G.EMAIl = M.EMAIL
         WHERE G.EMAIL = #{email}
     </select>
+    <select id="selectByName">
+        SELECT NAME
+        FROM MEMBER
+        WHERE EMAIL = #{email}
+    </select>
 </mapper>

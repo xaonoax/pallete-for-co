@@ -1,9 +1,7 @@
 package com.palleteforco.palleteforco.domain.member.controller;
 
-import com.palleteforco.palleteforco.domain.google.dto.GoogleDto;
 import com.palleteforco.palleteforco.domain.member.dto.MemberDto;
 import com.palleteforco.palleteforco.domain.member.service.MemberService;
-import com.palleteforco.palleteforco.domain.security.oauth.SessionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,18 +15,15 @@ import java.util.Map;
 @Slf4j
 public class MemberContoller {
     private final MemberService memberService;
-
     @Autowired
     public MemberContoller(MemberService memberService) {
         this.memberService = memberService;
     }
 
     @GetMapping("/join")
-    public String getJson(Authentication authentication) {
-        OAuth2User oAuth2User =(OAuth2User) authentication.getPrincipal();
-        SessionUtil sessionUtil = new SessionUtil(GoogleDto.builder().build());
+    public String getGoogleInfo(Authentication authentication) {
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
         Map<String, Object> attributes = oAuth2User.getAttributes();
-
 
         return attributes.toString();
     }
