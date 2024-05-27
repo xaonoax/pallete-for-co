@@ -5,10 +5,10 @@ import com.palleteforco.palleteforco.domain.member.dto.MemberDto;
 import com.palleteforco.palleteforco.domain.member.mapper.MemberMapper;
 import com.palleteforco.palleteforco.domain.security.oauth.OAuth2Service;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -22,11 +22,13 @@ public class MemberServiceImpl implements MemberService {
         this.oAuth2Service = oAuth2Service;
     }
 
+    @Transactional
     public void addMemberInfo(MemberDto memberDto) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String) oAuth2User.getAttributes().get("email");
-
+        String email = oAuth2Service.getPrincipalMemberEmail();
         MemberDto existing = memberMapper.selectMemberProfile(memberDto.getEmail());
+
+        memberDto.setEmail(email);
+        memberDto.setJoin_date(LocalDateTime.now());
 
         if (existing == null) {
             memberMapper.insertMemberInfo(memberDto);
@@ -34,19 +36,20 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    public List<MemberDto> getGoogleMemberInfo() throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
-
-        return memberMapper.selectGoogleMemberInfo(email);
-    }
-
+    // --- 마이페이지에서 사용 ---
+    @Transactional
     public void modifyMemberInfo(MemberDto memberDto) throws Exception {
-        OAuth2User oAuth2User = (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String email = (String)oAuth2User.getAttributes().get("email");
+        String email = oAuth2Service.getPrincipalMemberEmail();
 
         memberDto.setEmail(email);
 
         memberMapper.updateMemberInfo(memberDto);
+    }
+
+    @Transactional
+    public List<MemberDto> getGoogleMemberInfo() throws Exception {
+        String email = oAuth2Service.getPrincipalMemberEmail();
+
+        return memberMapper.selectGoogleMemberInfo(email);
     }
 }

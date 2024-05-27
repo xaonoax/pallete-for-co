@@ -9,6 +9,7 @@ import java.util.List;
 public interface MemberMapper {
     public void insertMemberInfo(MemberDto memberDto) throws Exception;
     public MemberDto selectMemberProfile(String email) throws Exception;
-    public List<MemberDto> selectGoogleMemberInfo(String email) throws Exception;
     public void updateMemberInfo(MemberDto memberDto) throws Exception;
+    public List<MemberDto> selectGoogleMemberInfo(String email) throws Exception;
+    public String selectByName(String email) throws Exception;
 }
