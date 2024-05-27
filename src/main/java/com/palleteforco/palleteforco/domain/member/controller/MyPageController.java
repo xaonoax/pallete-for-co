@@ -66,7 +66,7 @@ public class MyPageController {
         return inquiryService.getMyInquiries();
     }
 
-//     장바구니 목록
+    // 장바구니 목록
     @GetMapping("/cart")
     public List<CartDto> getMyCart() throws Exception {
         return cartService.getMyCart();
