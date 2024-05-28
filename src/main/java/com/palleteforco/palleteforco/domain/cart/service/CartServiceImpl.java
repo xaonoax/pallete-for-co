@@ -38,6 +38,10 @@ public class CartServiceImpl implements CartService {
         ProductDto productDto = productMapper.selectProductListDetail(cartDto.getProduct_id());
         log.info("***** 제품 아이디 ***** : " + productDto);
 
+        if (productDto == null) {
+            throw new NotFoundException("해당 제품이 존재하지 않습니다.");
+        }
+
         cartDto.setEmail(email);
         cartDto.setCart_date(LocalDateTime.now());
         cartDto.setCart_status(0);
@@ -66,20 +70,22 @@ public class CartServiceImpl implements CartService {
     public void modifyCart(CartDto cartDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         CartDto existingCartId = cartMapper.selectCartById(cartDto.getCart_id());
-        log.info("existingCartId : " + existingCartId);
-        CartDto existingProductId = cartMapper.selectExistForCart(email, cartDto.getProduct_id());
-        log.info("existingProductId : " + existingProductId);
 
-        if (existingCartId == null || existingProductId == null) {
-            throw new NotFoundException("장바구니에 담긴 제품이 없습니다.");
+        cartDto.setEmail(email);
+        cartDto.setCart_date(LocalDateTime.now());
+
+        if (existingCartId == null) {
+            throw new NotFoundException("해당 장바구니가 없습니다.");
         }
-
         if (!existingCartId.getEmail().equals(email)) {
             throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
-        cartDto.setEmail(email);
-        cartDto.setCart_date(LocalDateTime.now());
+        CartDto existingProductId = cartMapper.selectExistForCart(email, existingCartId.getProduct_id());
+
+        if (existingProductId == null) {
+            throw new NotFoundException("구매 완료한 제품입니다.");
+        }
 
         cartMapper.updateCart(cartDto);
     }
@@ -91,6 +97,10 @@ public class CartServiceImpl implements CartService {
 
         if (existing == null) {
             throw new NotFoundException("장바구니에 담긴 제품이 없습니다.");
+        }
+
+        if (existing.getCart_status() == 1) {
+            throw new NotFoundException("구매 완료된 장바구니는 삭제할 수 없습니다.");
         }
 
         if (!existing.getEmail().equals(email)) {

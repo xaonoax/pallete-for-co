@@ -20,4 +20,16 @@ public class CartDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cart_date;
     private int cart_status;
+
+    @Override
+    public String toString() {
+        return "CartDto{" +
+                "email='" + email + '\'' +
+                ", product_id=" + product_id +
+                ", cart_id=" + cart_id +
+                ", cart_qty=" + cart_qty +
+                ", cart_date=" + cart_date +
+                ", cart_status=" + cart_status +
+                '}';
+    }
 }
