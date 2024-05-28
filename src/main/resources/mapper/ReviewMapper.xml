@@ -5,7 +5,7 @@
         INSERT INTO REVIEW(EMAIL, ORDERS_ID, REVIEW_CONTENT, REVIEW_WRITER, SCORE, REVIEW_FILE_NAME, REVIEW_STORED_FILE_NAME)
         SELECT M.EMAIL, #{orders_id}, #{review_content}, M.NAME, #{score}, #{review_file_name}, #{review_stored_file_name}
         FROM MEMBER M, ORDERS O
-        WHERE M.EMAIL = #{email} AND ORDERS_ID = #{orders_id} AND O.ORDERS_STATUS = 3
+        WHERE M.EMAIL = #{email} AND O.ORDERS_ID = #{orders_id} AND O.ORDERS_STATUS = 3
     </insert>
     <select id="selectReviewList">
         SELECT *
@@ -14,7 +14,7 @@
         JOIN CART C ON O.CART_ID = C.CART_ID
         WHERE C.PRODUCT_ID = #{product_id}
     </select>
-    <select id="selectReview">
+    <select id="selectReviewById">
         SELECT *
         FROM REVIEW
         WHERE REVIEW_ID = #{review_id}
@@ -33,7 +33,7 @@
         WHERE REVIEW_ID = #{review_id}
     </delete>
     <select id="selectExistForReview">
-        SELECT COUNT(*) > 0
+        SELECT *
         FROM REVIEW
         WHERE ORDERS_ID = #{orders_id}
     </select>

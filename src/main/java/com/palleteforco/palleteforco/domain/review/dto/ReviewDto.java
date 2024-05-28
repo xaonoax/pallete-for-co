@@ -30,4 +30,21 @@ public class ReviewDto {
     private String review_file_name;
     private String review_stored_file_name;
     private MultipartFile reviewFile;
+
+    @Override
+    public String toString() {
+        return "ReviewDto{" +
+                "email='" + email + '\'' +
+                ", orders_id=" + orders_id +
+                ", review_id=" + review_id +
+                ", review_content='" + review_content + '\'' +
+                ", review_writer='" + review_writer + '\'' +
+                ", review_reg_date=" + review_reg_date +
+                ", review_update_date=" + review_update_date +
+                ", score=" + score +
+                ", review_file_name='" + review_file_name + '\'' +
+                ", review_stored_file_name='" + review_stored_file_name + '\'' +
+                ", reviewFile=" + reviewFile +
+                '}';
+    }
 }
