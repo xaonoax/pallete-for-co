@@ -7,6 +7,7 @@ import com.palleteforco.palleteforco.global.config.OAuthAttributes;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -70,5 +71,14 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
             googleDto.setRole(role);
             googleMapper.updateGoogle(googleDto);
         }
+    }
+
+    public OAuth2User getPrincipal() {
+        return (OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
+
+    public String getPrincipalMemberEmail() {
+        OAuth2User oAuth2User = getPrincipal();
+        return (String) oAuth2User.getAttributes().get("email");
     }
 }
