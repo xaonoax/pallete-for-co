@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface OrdersService {
     public void placeOrders(OrdersDto ordersDto) throws Exception;
-    public void cancelOrders(Long orders_id) throws Exception;
+    public void cancelOrders(OrdersDto ordersDto) throws Exception;
     public List<OrdersDto> getMyOrders() throws Exception;
 }
