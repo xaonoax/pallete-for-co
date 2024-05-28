@@ -3,7 +3,7 @@
 <mapper namespace="com.palleteforco.palleteforco.domain.orders.mapper.OrdersMapper">
     <insert id="insertOrders" useGeneratedKeys="true" keyProperty="orders_id">
         INSERT INTO ORDERS(cart_id, orders_date, orders_status)
-        VALUES(#{cart_id}, #{orders_date}, 1)
+        VALUES(#{cart_id}, #{orders_date}, #{orders_status})
     </insert>
     <select id="selectOrdersById">
         SELECT *
@@ -12,7 +12,7 @@
     </select>
     <update id="updateOrdersByCancel">
         UPDATE ORDERS
-        SET ORDERS_STATUS = 0
+        SET ORDERS_STATUS = #{orders_status}
         WHERE ORDERS_ID = #{orders_id}
     </update>
     <select id="selectMyOrders">

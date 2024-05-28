@@ -16,6 +16,16 @@ public class OrdersDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orders_date;
+
+    @Override
+    public String toString() {
+        return "OrdersDto{" +
+                "orders_id=" + orders_id +
+                ", cart_id=" + cart_id +
+                ", orders_status=" + orders_status +
+                ", orders_date=" + orders_date +
+                '}';
+    }
 }
 
 
