@@ -31,7 +31,7 @@ public class CartServiceImpl implements CartService {
         this.oAuth2Service = oAuth2Service;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void registerCart(CartDto cartDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         log.info("***** 이메일 ***** : " + email);
@@ -66,7 +66,7 @@ public class CartServiceImpl implements CartService {
         }
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void modifyCart(CartDto cartDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         CartDto existingCartId = cartMapper.selectCartById(cartDto.getCart_id());
@@ -90,7 +90,7 @@ public class CartServiceImpl implements CartService {
         cartMapper.updateCart(cartDto);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeCart(Long cart_id) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         CartDto existing = cartMapper.selectCartById(cart_id);
@@ -110,7 +110,7 @@ public class CartServiceImpl implements CartService {
         cartMapper.deleteCart(cart_id);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<CartDto> getMyCart() throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
 
