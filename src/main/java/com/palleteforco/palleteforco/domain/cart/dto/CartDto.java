@@ -20,6 +20,7 @@ public class CartDto {
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime cart_date;
     private int cart_status;
+    private LocalDateTime time_out;
 
     @Override
     public String toString() {

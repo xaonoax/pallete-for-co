@@ -14,4 +14,5 @@ public class Cart {
     private Long cart_qty;
     private LocalDateTime cart_date;
     private Long cart_status;
+    private LocalDateTime time_out;
 }
