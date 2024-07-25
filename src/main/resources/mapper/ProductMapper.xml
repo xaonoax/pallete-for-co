@@ -26,4 +26,21 @@
             PRODUCT_IMAGE = #{product_image},
             PRODUCT_DETAIL = #{product_detail}
     </update>
+    <update id="updateProductQty">
+        UPDATE PRODUCT
+        SET QTY = QTY - (SELECT C.CART_QTY
+                         FROM CART C
+                         JOIN ORDERS O ON C.CART_ID = O.CART_ID
+                         WHERE O.CART_ID = #{cart_id})
+        WHERE PRODUCT_ID = (SELECT PRODUCT_ID P
+                            FROM CART C
+                            JOIN ORDERS O ON C.CART_ID = O.CART_ID
+                            WHERE O.CART_ID = #{cart_id})
+    </update>
+    <select id="selectProductForUpdate">
+        SELECT qty
+        FROM PRODUCT
+        WHERE PRODUCT_ID = #{product_id}
+        FOR UPDATE
+    </select>
 </mapper>

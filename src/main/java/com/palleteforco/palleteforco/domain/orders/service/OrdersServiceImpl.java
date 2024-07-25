@@ -4,6 +4,8 @@ import com.palleteforco.palleteforco.domain.cart.dto.CartDto;
 import com.palleteforco.palleteforco.domain.cart.mapper.CartMapper;
 import com.palleteforco.palleteforco.domain.orders.dto.OrdersDto;
 import com.palleteforco.palleteforco.domain.orders.mapper.OrdersMapper;
+import com.palleteforco.palleteforco.domain.product.dto.ProductDto;
+import com.palleteforco.palleteforco.domain.product.mapper.ProductMapper;
 import com.palleteforco.palleteforco.domain.security.oauth.OAuth2Service;
 import com.palleteforco.palleteforco.global.exception.ForbiddenExceptionHandler;
 import com.palleteforco.palleteforco.global.exception.NotFoundException;
@@ -21,17 +23,20 @@ public class OrdersServiceImpl implements OrdersService {
     private final OrdersMapper ordersMapper;
     private final CartMapper cartMapper;
     private final OAuth2Service oAuth2Service;
+    private final ProductMapper productMapper;
 
     @Autowired
     public OrdersServiceImpl(OrdersMapper ordersMapper,
                              CartMapper cartMapper,
-                             OAuth2Service oAuth2Service) {
+                             OAuth2Service oAuth2Service,
+                             ProductMapper productMapper) {
         this.ordersMapper = ordersMapper;
         this.cartMapper = cartMapper;
         this.oAuth2Service = oAuth2Service;
+        this.productMapper = productMapper;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void placeOrders(OrdersDto ordersDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         CartDto existing = cartMapper.selectCartById(ordersDto.getCart_id());
@@ -51,10 +56,18 @@ public class OrdersServiceImpl implements OrdersService {
             throw new ForbiddenExceptionHandler("접근 권한이 없습니다.");
         }
 
+        ProductDto productDto = productMapper.selectProductForUpdate(existing.getProduct_id());
+
+        if (productDto.getQty() < existing.getCart_qty()) {
+            throw new NotFoundException("재고가 부족합니다.");
+        }
+
         ordersMapper.insertOrders(ordersDto);
         cartMapper.updateCartStatus(ordersDto.getCart_id());
+        productMapper.updateProductQty(ordersDto.getCart_id());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public void cancelOrders(OrdersDto ordersDto) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         OrdersDto existing = ordersMapper.selectOrdersById(ordersDto.getOrders_id());
@@ -82,6 +95,7 @@ public class OrdersServiceImpl implements OrdersService {
         ordersMapper.updateOrdersByCancel(ordersDto);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     public List<OrdersDto> getMyOrders() throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
 
