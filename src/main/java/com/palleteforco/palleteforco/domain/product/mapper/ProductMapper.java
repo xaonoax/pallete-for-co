@@ -12,4 +12,6 @@ public interface ProductMapper {
     public ProductDto selectProductListDetail(Long product_id) throws Exception;
     public void updateProduct(ProductDto productDto) throws Exception;
     public void deleteProduct(Long product_id) throws Exception;
+    public void updateProductQty(Long product_id) throws Exception;
+    public ProductDto selectProductForUpdate(Long product_id) throws Exception;
 }
