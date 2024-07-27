@@ -2,6 +2,7 @@ package com.palleteforco.palleteforco.domain.review.service;
 
 import com.palleteforco.palleteforco.domain.cart.dto.CartDto;
 import com.palleteforco.palleteforco.domain.cart.mapper.CartMapper;
+import com.palleteforco.palleteforco.domain.file.FileService;
 import com.palleteforco.palleteforco.domain.member.mapper.MemberMapper;
 import com.palleteforco.palleteforco.domain.orders.dto.OrdersDto;
 import com.palleteforco.palleteforco.domain.orders.mapper.OrdersMapper;
@@ -19,12 +20,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 @Slf4j
@@ -35,6 +33,7 @@ public class ReviewServiceImpl implements ReviewService {
     private final OrdersMapper ordersMapper;
     private final CartMapper cartMapper;
     private final OAuth2Service oAuth2Service;
+    private final FileService fileService;
 
     @Autowired
     public ReviewServiceImpl(ReviewMapper reviewMapper,
@@ -42,19 +41,21 @@ public class ReviewServiceImpl implements ReviewService {
                              MemberMapper memberMapper,
                              OrdersMapper ordersMapper,
                              CartMapper cartMapper,
-                             OAuth2Service oAuth2Service) {
+                             OAuth2Service oAuth2Service,
+                             FileService fileService) {
         this.reviewMapper = reviewMapper;
         this.productMapper = productMapper;
         this.memberMapper = memberMapper;
         this.ordersMapper = ordersMapper;
         this.cartMapper = cartMapper;
         this.oAuth2Service = oAuth2Service;
+        this.fileService = fileService;
     }
 
     @Value("${file.upload.dir}")
     private String fileUploadDir;
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ReviewResponse registerReview(ReviewDto reviewDto, Long product_id) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         log.info("로그인 : " + email);
@@ -100,20 +101,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (reviewDto.getReviewFile() == null || reviewDto.getReviewFile().isEmpty()) {
             reviewMapper.insertReview(reviewDto);
         } else {
-            MultipartFile reviewFile = reviewDto.getReviewFile();
-            String reviewFileName = reviewFile.getOriginalFilename();
-            String reviewStoredFileName = UUID.randomUUID() + "_" + reviewFileName;
-
-            reviewDto.setReview_id(reviewDto.getReview_id());
-            reviewDto.setReview_file_name(reviewFileName);
-            reviewDto.setReview_stored_file_name(reviewStoredFileName);
-
-            String filePath = fileUploadDir + reviewStoredFileName;
-            reviewFile.transferTo(new File(filePath));
-
-            response.setReview_file_name(reviewFileName);
-            response.setReview_stored_file_name(reviewStoredFileName);
-
+            fileService.FileAsyncForReview(reviewDto, response);
             reviewMapper.insertReview(reviewDto);
         }
 
@@ -122,14 +110,14 @@ public class ReviewServiceImpl implements ReviewService {
         return response;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<ReviewDto> getReviewList(Long product_id) throws Exception {
         productMapper.selectProductListDetail(product_id);
 
         return reviewMapper.selectReviewList(product_id);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public ReviewResponse modifyReview(ReviewDto reviewDto, Long product_id) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         String writer = memberMapper.selectByName(email);
@@ -165,20 +153,7 @@ public class ReviewServiceImpl implements ReviewService {
         if (reviewDto.getReviewFile() == null || reviewDto.getReviewFile().isEmpty()) {
             reviewMapper.updateReview(reviewDto);
         } else {
-            MultipartFile reviewFile = reviewDto.getReviewFile();
-            String reviewFileName = reviewFile.getOriginalFilename();
-            String reviewStoredFileName = UUID.randomUUID() + "_" + reviewFileName;
-
-            reviewDto.setReview_file_name(reviewFileName);
-            reviewDto.setReview_stored_file_name(reviewStoredFileName);
-            reviewDto.setReview_id(reviewDto.getReview_id());
-
-            String filePath = fileUploadDir + reviewStoredFileName;
-            reviewFile.transferTo(new File(filePath));
-
-            response.setReview_file_name(reviewFileName);
-            response.setReview_stored_file_name(reviewStoredFileName);
-
+            fileService.FileAsyncForReview(reviewDto, response);
             reviewMapper.updateReview(reviewDto);
         }
 
@@ -187,7 +162,7 @@ public class ReviewServiceImpl implements ReviewService {
         return response;
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeReview(Long review_id, Long product_id) throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
         ReviewDto existing = reviewMapper.selectReviewById(review_id);
@@ -216,7 +191,7 @@ public class ReviewServiceImpl implements ReviewService {
         reviewMapper.deleteReview(review_id);
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public List<ReviewDto> getMyReview() throws Exception {
         String email = oAuth2Service.getPrincipalMemberEmail();
 
