@@ -1,24 +1,34 @@
 package com.palleteforco.palleteforco.domain.file;
 
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.palleteforco.palleteforco.domain.inquiry.dto.InquiryDto;
 import com.palleteforco.palleteforco.domain.inquiry.dto.InquiryResponse;
 import com.palleteforco.palleteforco.domain.review.dto.ReviewDto;
 import com.palleteforco.palleteforco.domain.review.dto.ReviewResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j
 @Service
 public class FileServiceImpl implements FileService {
 
-    @Value("${file.upload.dir}")
-    private String fileUploadDir;
+    private final AmazonS3Client amazonS3Client;
+
+    @Autowired
+    public FileServiceImpl(AmazonS3Client amazonS3Client) {
+        this.amazonS3Client = amazonS3Client;
+    }
+
+    @Value("${cloud.aws.s3.bucket}")
+    private String bucket;
 
     @Async
     public void FileAsyncForInquiry(InquiryDto inquiryDto, InquiryResponse response) throws Exception {
@@ -29,21 +39,33 @@ public class FileServiceImpl implements FileService {
 
         MultipartFile inquiryFile = inquiryDto.getInquiryFile();
         String inquiryFileName = inquiryFile.getOriginalFilename();
-        String inquiryStoredFileName = UUID.randomUUID() + "_" + inquiryFileName;
+        String inquiryStoredFileName = "inquiry_" + UUID.randomUUID() + "_" + inquiryFileName;
+        String filePath = "https://" + bucket + "/inquiry" + inquiryStoredFileName;
 
-        // 파일 정보 등록
-        inquiryDto.setInquiry_id(inquiryDto.getInquiry_id());
-        inquiryDto.setInquiry_file_name(inquiryFileName);
-        inquiryDto.setInquiry_stored_file_name(inquiryStoredFileName);
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(inquiryFile.getContentType());
+            metadata.setContentLength(inquiryFile.getSize());
 
-        String filePath = fileUploadDir + inquiryStoredFileName;
-        inquiryFile.transferTo(new File(filePath));
+            amazonS3Client.putObject(bucket, inquiryStoredFileName, inquiryFile.getInputStream(), metadata);
 
-        // 응답 객체에 파일 정보 설정하기
-        response.setInquiry_file_name(inquiryFileName);
-        response.setInquiry_stored_file_name(inquiryStoredFileName);
+            // 파일 정보 등록
+            inquiryDto.setInquiry_id(inquiryDto.getInquiry_id());
+            inquiryDto.setInquiry_file_name(inquiryFileName);
+            inquiryDto.setInquiry_stored_file_name(inquiryStoredFileName);
 
-        log.info("***** 파일 비동기처리 완료(문의) *****");
+            // 응답 객체에 파일 정보 설정하기
+            response.setInquiry_file_name(inquiryFileName);
+            response.setInquiry_stored_file_name(filePath);
+
+            log.info("***** 파일 비동기처리 완료(문의) *****");
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            log.error("파일 업로드 오류 발생 : " + e.getMessage());
+
+            throw new Exception("파일 업로드 실패");
+        }
     }
 
     @Async
@@ -55,18 +77,30 @@ public class FileServiceImpl implements FileService {
 
         MultipartFile reviewFile = reviewDto.getReviewFile();
         String reviewFileName = reviewFile.getOriginalFilename();
-        String reviewStoredFileName = UUID.randomUUID() + "_" + reviewFileName;
+        String reviewStoredFileName = "review_" + UUID.randomUUID() + "_" + reviewFileName;
+        String filePath = "https://" + bucket + "/review" + reviewStoredFileName;
 
-        reviewDto.setReview_id(reviewDto.getReview_id());
-        reviewDto.setReview_file_name(reviewFileName);
-        reviewDto.setReview_stored_file_name(reviewStoredFileName);
+        try {
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType(reviewFile.getContentType());
+            metadata.setContentLength(reviewFile.getSize());
 
-        String filePath = fileUploadDir + reviewStoredFileName;
-        reviewFile.transferTo(new File(filePath));
+            amazonS3Client.putObject(bucket, reviewStoredFileName, reviewFile.getInputStream(), metadata);
 
-        response.setReview_file_name(reviewFileName);
-        response.setReview_stored_file_name(reviewStoredFileName);
+            reviewDto.setReview_id(reviewDto.getReview_id());
+            reviewDto.setReview_file_name(reviewFileName);
+            reviewDto.setReview_stored_file_name(reviewStoredFileName);
 
-        log.info("***** 파일 비동기처리 완료(리뷰) *****");
+            response.setReview_file_name(reviewFileName);
+            response.setReview_stored_file_name(filePath);
+
+            log.info("***** 파일 비동기처리 완료(문의) *****");
+        } catch (IOException e) {
+            e.printStackTrace();
+
+            log.error("파일 업로드 오류 발생 : " + e.getMessage());
+
+            throw new Exception("파일 업로드 실패");
+        }
     }
 }
