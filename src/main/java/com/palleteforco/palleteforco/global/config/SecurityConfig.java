@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 
 @EnableWebSecurity
@@ -33,7 +36,7 @@ public class SecurityConfig {
                         authorizeRequests
                                 .requestMatchers("/", "/login/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/products/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/producst/**").hasRole(Role.MEMBER.name())
+                                .requestMatchers(HttpMethod.POST, "/products/**").hasRole(Role.MEMBER.name())
                                 .requestMatchers(HttpMethod.PUT, "/products/**").hasRole(Role.MEMBER.name())
                                 .requestMatchers(HttpMethod.DELETE, "/products/**").hasRole(Role.MEMBER.name())
                                 .requestMatchers("/cart/**", "/orders/**", "/dib/**", "/inquiries/**", "mypage/**").hasRole(Role.MEMBER.name())
@@ -52,11 +55,22 @@ public class SecurityConfig {
                         .successHandler(new LoginSuccessHandler())
 
                 )
+                .sessionManagement(sessionManagement -> sessionManagement
+                        .sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
+                        .maximumSessions(1) // 동시 접속 세션 1개
+                        .maxSessionsPreventsLogin(false)  // 동시 로그인 차단
+                        .sessionRegistry(sessionRegistry())
+                )
                 .build();
     }
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
         return new LoginSuccessHandler();
+    }
+
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
 }
